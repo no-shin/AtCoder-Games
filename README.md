@@ -1,3 +1,17 @@
+やること
+```
+npm run dev
+```
+が走ればよい
+
+npmのインストール、nodeのインストールなどをする
+
+
+app/welcomeの下に各々のものを作成する
+
+
+# 以下はreact公式のreadmeです
+
 # Welcome to React Router!
 
 A modern, production-ready template for building full-stack React applications using React Router.
