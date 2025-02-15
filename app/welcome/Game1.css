@@ -1,0 +1,13 @@
+/* Game1.css */
+.game-container {
+  display: flex;
+  flex-direction: column; /* 縦方向に要素を並べる */
+  align-items: center; /* 水平方向に中央揃え */
+  justify-content: center; /* 垂直方向に中央揃え */
+  height: 100vh; /* 画面全体の高さを指定 */
+}
+
+.game-info {
+  margin-top: 20px; /* キャンバスとボタンの間にスペースを作る */
+  text-align: center; /* テキストを中央揃えにする */
+}
