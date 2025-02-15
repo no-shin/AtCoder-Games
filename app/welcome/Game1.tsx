@@ -86,7 +86,7 @@ export function Game1() {
       const newBoard = [...board];
       newBoard[i][j] = currentPlayer;
       setBoard(newBoard);
-      drawBoard(); // 描画を更新
+      drawBoard();
 
       if (checkWinner(newBoard) == null && !isDraw) {
         aiTurn(newBoard);
