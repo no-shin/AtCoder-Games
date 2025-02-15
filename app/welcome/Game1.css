@@ -1,13 +1,44 @@
 /* Game1.css */
 .game-container {
   display: flex;
-  flex-direction: column; /* 縦方向に要素を並べる */
-  align-items: center; /* 水平方向に中央揃え */
-  justify-content: center; /* 垂直方向に中央揃え */
-  height: 100vh; /* 画面全体の高さを指定 */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f0f0f0; /* 背景色 */
+}
+
+.game-board {
+  border: 5px solid #ccc; /* 盤線の色 */
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2); /* 影 */
+}
+
+.game-board canvas {
+  cursor: pointer; /* マウスカーソル */
 }
 
 .game-info {
-  margin-top: 20px; /* キャンバスとボタンの間にスペースを作る */
-  text-align: center; /* テキストを中央揃えにする */
+  margin-top: 20px;
+  text-align: center;
+}
+
+.game-info p {
+  font-size: 24px; /* 勝敗メッセージのフォントサイズ */
+  color: #333; /* 勝敗メッセージの色 */
+  margin-bottom: 10px;
+}
+
+.game-info button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50; /* ボタンの色 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* ホバー時のアニメーション */
+}
+
+.game-info button:hover {
+  background-color: #45a049; /* ホバー時のボタン色 */
 }

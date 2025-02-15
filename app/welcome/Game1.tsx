@@ -1,25 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import './Game1.css'; // CSSファイルをインポート
+import React, { useState, useEffect, useRef } from 'react';
+import './Game1.css';
 
-// 丸バツゲームを作る
 export function Game1() {
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [board, setBoard] = useState<string[][]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<string>('O');
   const [winner, setWinner] = useState<string | null>(null);
   const [isDraw, setIsDraw] = useState<boolean>(false);
+  const [gameStatus, setGameStatus] = useState<string>('ゲーム開始');
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const newCanvas = document.createElement('canvas');
-      newCanvas.width = 300;
-      newCanvas.height = 300;
-      setCanvas(newCanvas);
-      const newCtx = newCanvas.getContext('2d');
+    if (canvasRef.current) {
+      const newCtx = canvasRef.current.getContext('2d');
       setCtx(newCtx);
 
-      // 盤面の初期化
       const initialBoard: string[][] = [];
       for (let i = 0; i < 3; i++) {
         initialBoard[i] = [];
@@ -32,18 +27,23 @@ export function Game1() {
   }, []);
 
   useEffect(() => {
-    if (canvas && ctx) {
+    if (ctx) {
       drawBoard();
     }
-  }, [board, canvas, ctx]);
+  }, [board, ctx]);
 
   const drawBoard = () => {
-    if (!ctx || !canvas) return;
+    if (!ctx || !canvasRef.current) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const canvasWidth = 300;
+    const canvasHeight = 300;
+    canvasRef.current.width = canvasWidth;
+    canvasRef.current.height = canvasHeight;
+
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     const GRID_SIZE = 3;
-    const CELL_SIZE = canvas.width / GRID_SIZE;
+    const CELL_SIZE = canvasWidth / GRID_SIZE;
 
     for (let i = 0; i < GRID_SIZE; i++) {
       for (let j = 0; j < GRID_SIZE; j++) {
@@ -60,21 +60,20 @@ export function Game1() {
           ctx.arc(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE / 3, 0, 2 * Math.PI);
           ctx.fill();
         } else if (board[i][j] === 'X') {
-          ctx.strokeStyle = 'blue';
-          ctx.lineWidth = 5;
+          ctx.fillStyle = 'blue';
           ctx.beginPath();
-          ctx.moveTo(x + CELL_SIZE / 4, y + CELL_SIZE / 4);
-          ctx.lineTo(x + CELL_SIZE * 3 / 4, y + CELL_SIZE * 3 / 4);
-          ctx.moveTo(x + CELL_SIZE * 3 / 4, y + CELL_SIZE / 4);
-          ctx.lineTo(x + CELL_SIZE / 4, y + CELL_SIZE * 3 / 4);
-          ctx.stroke();
+          ctx.arc(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE / 3, 0, 2 * Math.PI);
+          ctx.fill();
         }
       }
     }
   };
 
   const handleMouseClick = (event: React.MouseEvent) => {
-    if (!canvas || winner || isDraw) return;
+    if (!ctx || winner || isDraw) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -87,54 +86,24 @@ export function Game1() {
       const newBoard = [...board];
       newBoard[i][j] = currentPlayer;
       setBoard(newBoard);
-      setCurrentPlayer(currentPlayer === 'O' ? 'X' : 'O');
+      drawBoard(); // 描画を更新
 
-      checkWinner(newBoard);
+      if (checkWinner(newBoard) == null && !isDraw) {
+        aiTurn(newBoard);
+      }
     }
   };
 
-  const checkWinner = (currentBoard: string[][]) => {
+  const checkWinner = (currentBoard: string[][]): boolean => {
     const lines = [
-      [
-        [0, 0],
-        [0, 1],
-        [0, 2],
-      ],
-      [
-        [1, 0],
-        [1, 1],
-        [1, 2],
-      ],
-      [
-        [2, 0],
-        [2, 1],
-        [2, 2],
-      ],
-      [
-        [0, 0],
-        [1, 0],
-        [2, 0],
-      ],
-      [
-        [0, 1],
-        [1, 1],
-        [2, 1],
-      ],
-      [
-        [0, 2],
-        [1, 2],
-        [2, 2],
-      ],
-      [
-        [0, 0],
-        [1, 1],
-        [2, 2],
-      ],
-      [
-        [0, 2],
-        [1, 1],
-        [2, 0],
-      ],
+      [[0, 0],[0, 1],[0, 2],],
+      [[1, 0],[1, 1],[1, 2],],
+      [[2, 0],[2, 1],[2, 2],],
+      [[0, 0],[1, 0],[2, 0],],
+      [[0, 1],[1, 1],[2, 1],],
+      [[0, 2],[1, 2],[2, 2],],
+      [[0, 0],[1, 1],[2, 2],],
+      [[0, 2],[1, 1],[2, 0],],
     ];
 
     for (let line of lines) {
@@ -145,17 +114,47 @@ export function Game1() {
         currentBoard[a[0]][a[1]] === currentBoard[c[0]][c[1]]
       ) {
         setWinner(currentBoard[a[0]][a[1]]);
-        return;
+        setGameStatus(currentBoard[a[0]][a[1]] + 'の勝ち！');
+        return currentBoard[a[0]][a[1]];
       }
     }
 
-    // 引き分け判定
     if (currentBoard.flat().every((cell) => cell !== '')) {
       setIsDraw(true);
+      setGameStatus('引き分け！');
     }
   };
 
-  const resetGame = () => {
+  const aiTurn = (currentBoard: string[][]) => {
+    const aiMove = getAiMove(currentBoard);
+    if (aiMove) {
+      const newBoard = [...currentBoard];
+      newBoard[aiMove.i][aiMove.j] = 'X';
+      setBoard(newBoard);
+      drawBoard();
+      checkWinner(newBoard);
+    }
+  };
+
+  const getAiMove = (currentBoard: string[][]) => {
+    const availableMoves = [];
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (currentBoard[i][j] === '') {
+          availableMoves.push({ i, j });
+        }
+      }
+    }
+
+    if (availableMoves.length > 0) {
+      const randomIndex = Math.floor(Math.random() * availableMoves.length);
+      return availableMoves[randomIndex];
+    }
+
+    return null;
+  };
+
+  const handleReset = () => {
     const initialBoard: string[][] = [];
     for (let i = 0; i < 3; i++) {
       initialBoard[i] = [];
@@ -167,25 +166,16 @@ export function Game1() {
     setCurrentPlayer('O');
     setWinner(null);
     setIsDraw(false);
+    setGameStatus('ゲーム開始');
   };
 
   return (
     <div className="game-container">
-      {canvas && (
-        <canvas
-          ref={(el) => {
-            if (el) {
-              setCanvas(el);
-            }
-          }}
-          onClick={handleMouseClick}
-        />
-      )}
-      <div className="game-info">
-        {winner && <p>{winner} の勝ちです！</p>}
-        {isDraw && <p>引き分けです！</p>}
-        <button onClick={resetGame}>リセット</button>
+      <canvas ref={canvasRef} onClick={handleMouseClick} />
+      <div className="button-container">
+        <button onClick={handleReset}>リセット</button>
       </div>
+      <p>{gameStatus}</p>
     </div>
   );
 }
