@@ -6,8 +6,8 @@ import { useState, useRef, useEffect } from "react";
 2 -> blocked (gray)
 */
 
-const boardSize = 19;
-const cellSize = 30;
+const boardSize = 9;
+const cellSize = 50;
 
 export function GridNim() {
   const [squares, setSquares] = useState<number[]>(
