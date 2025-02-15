@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from "react";
 const boardSize = 19;
 const cellSize = 30;
 
-export function Game2() {
+export function GridNim() {
   const [squares, setSquares] = useState<number[]>(
     Array(boardSize * boardSize).fill(0).map(() => (Math.random() > 0.5 ? 2 : 0))
   );
