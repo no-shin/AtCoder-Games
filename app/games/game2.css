@@ -1,0 +1,35 @@
+/* game2.css */
+.game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.game-board {
+  display: flex;
+  flex-direction: column;
+}
+
+.board-row {
+  display: flex;
+}
+
+.square {
+  appearance: none;
+  border: none;
+  height: 50px;
+  width: 50px;
+  padding: 0;
+  cursor: pointer;
+  display: flex; /* 追加: flexbox を使用 */
+  justify-content: center; /* 追加: 水平方向に中央揃え */
+  align-items: center; /* 追加: 垂直方向に中央揃え */
+  font-size: 20px; /* 必要に応じてフォントサイズ調整 */
+}
+
+.status {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 20px;
+}

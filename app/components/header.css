@@ -1,0 +1,31 @@
+.header {
+    display: flex; /* 左右に要素を配置 */
+    justify-content: space-between; /* 左右の要素を両端に配置 */
+    align-items: center; /* 要素を垂直方向に中央揃え */
+    padding: 8px 20px; /* 上下のpaddingと左右のpadding */
+    color: #fff; 
+    background-color: #212529; /* 背景色 */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* 下に影をつける */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-title {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-github-icon {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    fill: #fff; /* アイコンの色 */
+}
