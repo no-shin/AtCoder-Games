@@ -1,0 +1,18 @@
+/* GridMoving.css */
+.board-table{
+  border-collapse: collapse;
+}
+.cell{
+  width: 30px;
+  height: 30px;
+  border: 1px solid black;
+  text-align: center;
+  font-size: 20px;
+  cursor: pointer;
+}
+.piece{
+  background-color: lightgreen;
+}
+.candidate{
+  background-color: lightblue;
+}
