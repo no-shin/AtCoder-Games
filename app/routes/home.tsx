@@ -7,6 +7,7 @@ import { Game2 } from       "../games/game2";
 import { Header } from      "../components/header";
 import { Tabs } from        "../components/tabs";
 import { Title } from       "../components/title";
+import { GridMoving } from  "../games/GridMoving";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -28,6 +29,7 @@ export default function Home() {
                     // { name: "Game2", contents: <Welcome2 /> },
                     { name: "Tic Tac Toe", contents: <Game1 /> },
                     { name: "Grid Nim", contents: <Game2 /> },
+                    { name: "Grid Moving", contents: <GridMoving /> }
                 ]} 
             /> 
         </div>
