@@ -316,10 +316,10 @@ export function Konnan() {
       <p>マスをクリックすることで選択でき、4回ごとに色が変わります。 </p><br />
       <p>ただし、選択された4つのマスは全てがつながっている必要があります。</p><br />
       <p>ひとつかたまりの「こんなん」を選択できたらスコアが1増えます。</p><br />
-      <p>採点する際はsubmit,模範解答を見る場合はanswerを押してください</p><br />
+      <p>採点する際はsubmit,模範解答を見る場合はcheck answerを押してください</p><br />
       <p>※たまたま同じ色になったとしてもそれは確率なので関係ないです。</p><br />
       <canvas ref={canvasRef} />
-      <button onClick={paint_answer}>answer</button>
+      <button onClick={paint_answer}>check answer</button>
       <br />
       <button onClick={culc_score}>submit</button>
       <p>スコア:{score}</p>
