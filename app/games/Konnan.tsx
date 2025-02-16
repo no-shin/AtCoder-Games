@@ -32,11 +32,11 @@ const TETRIS_SHAPES = [
 
 export function Konnan() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(false));
-  let paint_char: number[][][] = [];
-  const info = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(""));
-  const player = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(""));
-  let result: number[][] = [];
+  const [grid, setGrid] = useState(Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(false)));
+  const [paint_char, setPaintChar] = useState<number[][][]>([]);
+  const [info, setInfo] = useState<Array<string[]>>(Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill("")));
+  const [player, setPlayer] = useState<Array<string[]>>(Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill("")));
+  const [result, setResult] = useState<number[][]>([]);
   const [score, setScore] = useState<number>(0);
 
   useEffect(() => {
@@ -73,7 +73,6 @@ export function Konnan() {
       // コンポーネントがアンマウントされるときにイベントリスナーをクリーンアップ
       canvas.removeEventListener('click', handleClick);
     };
-    console.log("check");
 
   }, []);
 
@@ -218,7 +217,7 @@ export function Konnan() {
       }
       for (let i = 0; i < GRID_SIZE; i++) {
         for (let j = 0; j < GRID_SIZE; j++) {
-          if (!grid[i][j]) {
+          if (info[i][j] == "") {
             fillCellWithWhite(ctx, i, j);
           }
           player[i][j] = "";
