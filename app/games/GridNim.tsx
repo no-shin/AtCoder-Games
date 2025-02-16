@@ -166,7 +166,7 @@ export function GridNim() {
           }
 
     function calcGrundy(p: number): number {
-      let a = board.map((cell) => (cell === 0 ? 1 : 0));
+      let a = board.map((cell) => (cell === 1 ? 0 : 1));
       a[p] = 0;
       const x = Math.floor(p / boardSize);
       const y = p % boardSize;
