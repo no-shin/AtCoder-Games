@@ -135,16 +135,15 @@ export const GridMoving: React.FC = () => {
       alert("HとWに正の整数を入力してください");
       return;
     }
-    if(100<H || 100<W){
-      alert("HとWはそれぞれ100以下にしてください");
+    if(50<H || 50<W){
+      alert("HとWはそれぞれ50以下にしてください");
       return;
     }
-    console.log("Game Start");
     setGrid(generateGrid(H,W));
     setPiece({y:0, x:0});
     setTurn(0);
     setPlaying(true);
-    setResultText("");
+    setResultText("Game Start");
     nextTurn();
   },[H,W,generateGrid,nextTurn]);
 
@@ -155,10 +154,11 @@ export const GridMoving: React.FC = () => {
     const destination = candidatesPos.find(candidatesPos => candidatesPos.y === y && candidatesPos.x === x);
 
     if(destination){
+      setResultText("");
       setPiece(destination);
       setTurn(1);
     }else{
-      alert("そこには移動できません");
+      setResultText("そこには移動できません");
     }
   },[playing,grid,piece,turn,enumerateCandidatesPos,nextTurn]);
 
