@@ -72,8 +72,6 @@ export const GridMoving: React.FC = () => {
     
     // CPU目線で後手必勝 -> CPUが勝てない
     if(!dp[currentPiece.y][currentPiece.x]){
-      console.log("CPU < muridesu");
-      console.log("CPU mesen", currentPiece);
       return {win:false,path:[]};
     }
 
@@ -106,9 +104,6 @@ export const GridMoving: React.FC = () => {
         internal_turn = 1-internal_turn;
       }else break; // 一応nextPos===undefinedなときに
     }
-    console.log("getCPUResult called", currentPiece);
-    console.log("dp table", dp);
-    console.log("return value:", {win: !dp[currentPiece.y][currentPiece.x], path:path});
     return {win:true, path:path};
   }, [H,W,grid,enumerateCandidatesPos]);
 

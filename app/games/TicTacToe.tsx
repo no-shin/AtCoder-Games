@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './game1.css';
+import './TicTacToe.css';
 
-export function Game1() {
+export function TicTacToe() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [board, setBoard] = useState<string[][]>([]);
