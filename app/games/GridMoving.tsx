@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import './GridMoving.css';
+import '../components/tabs.css'
 
 type Grid = string[][];
 type Position = { y:number; x:number; };
 
 export const GridMoving: React.FC = () => {
-  console.log("enable");
-  const [H, setH] = useState<number>(4);
-  const [W, setW] = useState<number>(5);
+  const [H, setH] = useState<number>(8);
+  const [W, setW] = useState<number>(7);
   const [grid, setGrid] = useState<Grid | null>(null);
   const [piece, setPiece] = useState<Position>({y:0, x:0});
   const [turn, setTurn] = useState<number>(0); // (0:先手 1:後手)
+  const [playing, setPlaying] = useState<boolean>(false);
   const [resultText, setResultText] = useState<string>("");
 
   const generateGrid = useCallback((height: number, width: number): Grid =>{
@@ -18,7 +19,8 @@ export const GridMoving: React.FC = () => {
     for(let y=0; y<height; y++){
       const row: string[] = [];
       for(let x=0; x<width; x++){
-        row.push(Math.random() < 0.6 ? '.' : '#');
+        if(y!=0 || x!=0) row.push(Math.random() < 0.6666 ? '.' : '#');
+        else row.push('.');
       }
       newGrid.push(row);
     }
@@ -37,9 +39,16 @@ export const GridMoving: React.FC = () => {
     return candidatesPos;
   }, [H,W,grid]);
 
+  const isFinishGame = useCallback((candidatesPos: Position[]): boolean => {
+    if(candidatesPos.length === 0){
+      setPlaying(false);
+      const winner = (turn === 0 ? "CPU":"You");
+      setResultText(winner + "Win!");
+      return true;
+    }else return false;
+  }, [piece,turn]);
+
   const getCPUResult = useCallback(async (currentPiece: Position): Promise<{win:boolean, path:Position[]}> => {
-    await new Promise(resolve => setTimeout(resolve, 800));
-    let CPUWin = null;
     const dp: boolean[][] = Array(H).fill(null).map(() => Array(W).fill(false));
     for(let r = H - 1; r >= 0; r--){
       for(let c = W - 1; c >= 0; c--){
@@ -96,72 +105,75 @@ export const GridMoving: React.FC = () => {
       }else break; // 一応nextPos===undefinedなときに
     }
     return {win:true, path:path};
-  }, [H,W,grid]);
+  }, [H,W,grid,enumerateCandidatesPos]);
 
   const nextTurn = useCallback(async () => {
-    if(!grid) return;
+    if(!playing || !grid) return;
     const candidatesPos = enumerateCandidatesPos(piece);
-    if(candidatesPos.length === 0){
-      const winner = (turn === 0 ? "CPU" : "You");
-      setResultText("${winner}$ Win!");
-      return;
-    }
+    if(isFinishGame(candidatesPos)) return;
     
     if(turn === 1){
       const CPUResult = await getCPUResult(piece);
       let destination: Position;
       if(CPUResult.win){
-        destination = CPUResult.path[0];
+        destination = CPUResult.path[1];
       }else{
-        const candidatesPos = enumerateCandidatesPos(piece);
         destination = candidatesPos[Math.floor(Math.random() * candidatesPos.length)];
       }
       setPiece(destination);
       setTurn(0);
-      setTimeout(nextTurn, 0);
     }
-  }, [grid,enumerateCandidatesPos,piece,turn,getCPUResult]);
+  }, [playing,grid,piece,turn,enumerateCandidatesPos,getCPUResult]);
 
   const generateGame = useCallback(() => {
     if(isNaN(H) || isNaN(W) || H<=0 || W<=0){
       alert("HとWに正の整数を入力してください");
       return;
     }
-    if(100<H || 100<W){
-      alert("HとWはそれぞれ100以下にしてください");
+    if(50<H || 50<W){
+      alert("HとWはそれぞれ50以下にしてください");
       return;
     }
     setGrid(generateGrid(H,W));
     setPiece({y:0, x:0});
     setTurn(0);
-    setResultText("");
+    setPlaying(true);
+    setResultText("Game Start");
     nextTurn();
   },[H,W,generateGrid,nextTurn]);
 
   const handleCellClick = useCallback((y:number, x:number) => {
-    if(turn!==0 || !grid) return;
+    if(!playing || turn!==0 || !grid) return;
     const candidatesPos = enumerateCandidatesPos(piece);
+    if(isFinishGame(candidatesPos)) return;
     const destination = candidatesPos.find(candidatesPos => candidatesPos.y === y && candidatesPos.x === x);
 
     if(destination){
+      setResultText("");
       setPiece(destination);
       setTurn(1);
-      nextTurn();
     }else{
-      alert("そこには移動できません");
+      setResultText("そこには移動できません");
     }
-  },[grid,piece,turn,enumerateCandidatesPos,nextTurn]);
+  },[playing,grid,piece,turn,enumerateCandidatesPos,nextTurn]);
 
   const isCandidate = useCallback((y:number, x:number): boolean => {
-    if(turn!==0) return false;
+    if(!playing ||turn!==0) return false;
     const candidatesPos = enumerateCandidatesPos(piece);
     return !!candidatesPos.find(candidatesPos => candidatesPos.y===y && candidatesPos.x===x);
-  }, [piece,turn,enumerateCandidatesPos]);
+  }, [playing,piece,turn,enumerateCandidatesPos]);
+
+  useEffect(() => {
+    if(playing && turn===1){
+      nextTurn();
+    }else if(playing && turn===0){
+      const candidatesPos = enumerateCandidatesPos(piece);
+      isFinishGame(candidatesPos);
+    }
+  }, [playing,turn,piece,nextTurn,enumerateCandidatesPos,isFinishGame]);
 
   return (
     <div>
-      <h1>GridMoving</h1>
-
       <div>
         <label htmlFor="HeightInput">高さ (H):</label>
         <input
@@ -177,7 +189,9 @@ export const GridMoving: React.FC = () => {
           value={W}
           onChange={(e) => setW(parseInt(e.target.value))}
         />
-        <button onClick={generateGame}>Generate</button>
+        <div className='tabs-buttons'>
+          <button className='button' onClick={generateGame} disabled={playing}>Generate</button>
+        </div>
       </div>
 
       <div id="board">

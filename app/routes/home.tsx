@@ -7,7 +7,17 @@ import { Tabs } from "../components/tabs";
 import { Title } from "../components/title";
 import { Konnan } from "../games/Konnan";
 
-export function meta({ }: Route.MetaArgs) {
+import type { Route } from  "./+types/home";
+// import { Welcome } from     "../games/welcome";
+// import { Welcome2 } from    "../games/welcome2";
+import { Game1 } from       "../games/game1";
+import { Game2 } from       "../games/game2";
+import { Header } from      "../components/header";
+import { Tabs } from        "../components/tabs";
+import { Title } from       "../components/title";
+import { GridMoving } from  "../games/GridMoving";
+
+export function meta({}: Route.MetaArgs) {
     return [
         { title: "AtCoder-Games" },
         { name: "description", content: "AtCoDeer" },
