@@ -73,6 +73,7 @@ export function Konnan() {
       // コンポーネントがアンマウントされるときにイベントリスナーをクリーンアップ
       canvas.removeEventListener('click', handleClick);
     };
+    console.log("check");
 
   }, []);
 
@@ -141,15 +142,13 @@ export function Konnan() {
       const { x, y } = getRandomEmptyCell();
       const shape = getRandomTetrisShape();
       if (canPlaceTetris(x, y, shape)) {
-        let idx = 0;
         paint_char.push([]);
         shape.forEach(([dx, dy]) => {
           const newX = x + dx;
           const newY = y + dy;
           grid[newX][newY] = true;
-          paint_char[paint_char.length - 1].push([newX, newY]);
-          idx++;
           randomcnt++;
+          paint_char[paint_char.length - 1].push([newX, newY]);
         });
       } else {
         randomcnt++;
@@ -159,7 +158,7 @@ export function Konnan() {
     }
     for (let i = 0; i < GRID_SIZE; i++) {
       for (let j = 0; j < GRID_SIZE; j++) {
-        if (grid[i][j] == 0) fillCellWithWhite(ctx, i, j);
+        if (!grid[i][j]) fillCellWithWhite(ctx, i, j);
       }
     }
   };
@@ -207,7 +206,6 @@ export function Konnan() {
         ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); // キャンバスを真っ黒に塗りつぶす
       }
       drawGrid(ctx);
-      fillGrid(ctx);
       for (let i = 0; i < paint_char.length; i++) {
         for (let j = 0; j < 4; j++) {
           let newX = paint_char[i][j][0];
@@ -216,6 +214,14 @@ export function Konnan() {
           ctx.fillStyle = 'white';
           ctx.font = `${CELL_SIZE * 0.6}px Arial`;
           ctx.fillText(word, newX * CELL_SIZE + CELL_SIZE * 0.1, newY * CELL_SIZE + CELL_SIZE * 0.75);
+        }
+      }
+      for (let i = 0; i < GRID_SIZE; i++) {
+        for (let j = 0; j < GRID_SIZE; j++) {
+          if (!grid[i][j]) {
+            fillCellWithWhite(ctx, i, j);
+          }
+          player[i][j] = "";
         }
       }
     }
@@ -248,7 +254,6 @@ export function Konnan() {
       for (let j = 0; j < 4; j++) {
         for (let k = j + 1; k < 4; k++) {
           if (distance(pos[j][0], pos[j][1], pos[k][0], pos[k][1]) == 1) {
-            console.log(pos[j][0], pos[j][1], pos[k][0], pos[k][1]);
             nextcnt++;
           }
         }
@@ -258,6 +263,32 @@ export function Konnan() {
 
     }
     setScore(ans);
+    if (ctx) {
+      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); // クリア
+      ctx.fillStyle = 'black'; // 塗りつぶしの色を黒に設定
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); // キャンバスを真っ黒に塗りつぶす
+    }
+    drawGrid(ctx);
+    for (let i = 0; i < paint_char.length; i++) {
+      for (let j = 0; j < 4; j++) {
+        let newX = paint_char[i][j][0];
+        let newY = paint_char[i][j][1];
+        let word = info[newX][newY];
+        ctx.fillStyle = 'white';
+        ctx.font = `${CELL_SIZE * 0.6}px Arial`;
+        ctx.fillText(word, newX * CELL_SIZE + CELL_SIZE * 0.1, newY * CELL_SIZE + CELL_SIZE * 0.75);
+      }
+    }
+    for (let i = 0; i < GRID_SIZE; i++) {
+      for (let j = 0; j < GRID_SIZE; j++) {
+        if (!grid[i][j]) {
+          fillCellWithWhite(ctx, i, j);
+        }
+        player[i][j] = "";
+      }
+    }
+
+
 
   }
 
@@ -275,6 +306,7 @@ export function Konnan() {
 
     // クリックされたマスの位置をコンソールに出力
     //console.log(`Clicked on cell: (${x}, ${y})`);
+    if (player[x][y] != "") return;
     fillCellWithLightWhite(ctx, x, y);
   };
 
